@@ -8,11 +8,12 @@ const
 ,sass = require('gulp-sass')
 ,uglify = require('gulp-uglify-es').default
 ,webpackStream = require('webpack-stream')
+,browserSync = require('browser-sync').create()
 
 const configs = {
     dist: 'dist',
     src: 'src',
-    templates:{
+    views:{
         ext: '.twig'
     },
     scss:{
@@ -27,9 +28,9 @@ function Clean(){
     return src(configs.dist).pipe(clean({read:false, allowEmpty: false}));
 }
 
-function Templates(){
+function Views(){
     return new Promise((resolve,reject) => {
-        src(`${configs.src}/views/[^_]*${configs.templates.ext}`)
+        src(`${configs.src}/views/[^_]*${configs.views.ext}`)
         .pipe(twig())
         .pipe(dest(configs.dist))
         .on('error', reject)
@@ -61,8 +62,39 @@ function Javascripts(){
     })
 }
 
+const watchers = {
+    js:{
+        dir:'./src/js/**/*.js',
+        fn: Javascripts
+    },
+    sass: {
+        dir: './src/scss/**/*.scss',
+        fn: Sass
+    },
+    views: {
+        dir: './src/views/**/*.twig',
+        fn: Views
+    }
+}
+
 exports.clean = Clean
-exports.templates = Templates
+exports.views = Views
 exports.sass = Sass
 exports.js = Javascripts
-exports.default = series(Clean, Templates, Sass, Javascripts)
+exports.default = series(Clean, Views, Sass, Javascripts)
+
+exports.dev = ()=>{
+    browserSync.init({
+        server:{
+            baseDir: configs.dist
+        }
+    });
+
+    for( let watcher in watchers ){
+        let wAtual = watchers[watcher]
+        watch(wAtual.dir).on('change',()=>{
+            if(wAtual.fn) wAtual.fn().then(done => browserSync.reload())
+            else browserSync.reload()
+        })
+    }
+}

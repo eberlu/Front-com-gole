@@ -5,6 +5,9 @@
   "main": "index.js",
   "author": "Luciano",
   "license": "MIT",
+  "scripts": {
+    "dev": "gulp dev"
+  },
   "dependencies": {
     "bootstrap": "^4.4.1",
     "browser-sync": "^2.26.7",
