@@ -1,4 +1,4 @@
-const env = 'dev'
+const env = 'prod'
 
 const 
 {src, dest, series,watch} = require('gulp')
@@ -41,7 +41,10 @@ function Views(){
 function Sass(){
     return new Promise((resolve,reject)=>{
         src(configs.scss.files)
-        .pipe(sass({sourceComments:false}).on('error', sass.logError))
+        .pipe(sass({
+            sourceComments:false,
+            outputStyle: (env == 'dev' || env == 'development') ? 'expanded' : 'compressed',
+        }).on('error', sass.logError))
         .pipe(dest(`${configs.dist}/css`))
         .on('error', reject)
         .on('end', resolve)
