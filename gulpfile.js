@@ -20,7 +20,7 @@ const configs = {
         files: [ 'src/scss/main.scss' ]
     },
     javascripts:{
-        files: ['src/js/layout.js']
+        files: ['src/js/layout.js','src/js/index.js']
     }
 }
 
@@ -29,7 +29,7 @@ function Clean(){
 }
 
 function Views(){
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve,reject) => {s
         src(`${configs.src}/views/[^_]*${configs.views.ext}`)
         .pipe(twig())
         .pipe(dest(configs.dist))
@@ -50,31 +50,16 @@ function Sass(){
 
 function Javascripts(){
     return new Promise((resolve,reject)=>{
-        let fileStream = src(configs.javascripts.files)
+        src(configs.javascripts.files)
         .pipe(named())
-        .pipe(webpackStream())
-
-        if(env == 'prod') fileStream = fileStream.pipe(uglify())
-        
-        fileStream.pipe(dest('dist/js'))
+        .pipe(webpackStream({
+            mode: (env == 'dev' || env == 'development') ? 'development' : 'production',
+        }))
+        .pipe(dest('dist/js'))
         .on('error', reject)
         .on('end', resolve)
+        cle
     })
-}
-
-const watchers = {
-    js:{
-        dir:'./src/js/**/*.js',
-        fn: Javascripts
-    },
-    sass: {
-        dir: './src/scss/**/*.scss',
-        fn: Sass
-    },
-    views: {
-        dir: './src/views/**/*.twig',
-        fn: Views
-    }
 }
 
 exports.clean = Clean
@@ -90,11 +75,12 @@ exports.dev = ()=>{
         }
     });
 
-    for( let watcher in watchers ){
-        let wAtual = watchers[watcher]
-        watch(wAtual.dir).on('change',()=>{
-            if(wAtual.fn) wAtual.fn().then(done => browserSync.reload())
-            else browserSync.reload()
-        })
+    function reload(){
+        return browserSync.reload();
     }
+
+    watch(configs.src,{
+        ignored:[]
+    },
+    series(Views,Sass,Javascripts,reload))
 }
