@@ -29,7 +29,7 @@ function Clean(){
 }
 
 function Views(){
-    return new Promise((resolve,reject) => {s
+    return new Promise((resolve,reject) => {
         src(`${configs.src}/views/[^_]*${configs.views.ext}`)
         .pipe(twig())
         .pipe(dest(configs.dist))
@@ -58,7 +58,6 @@ function Javascripts(){
         .pipe(dest('dist/js'))
         .on('error', reject)
         .on('end', resolve)
-        cle
     })
 }
 
@@ -76,11 +75,9 @@ exports.dev = ()=>{
     });
 
     function reload(){
-        return browserSync.reload();
+        browserSync.reload();
     }
-
     watch(configs.src,{
         ignored:[]
-    },
-    series(Views,Sass,Javascripts,reload))
+    }).on('change', series(Views,Sass, Javascripts, reload))
 }

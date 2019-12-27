@@ -1,3 +1,3 @@
 $(function($){
-    console.log('index.js aqui',$)
+    console.log('index.js aqui')
 })
