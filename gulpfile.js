@@ -14,7 +14,8 @@ const configs = {
     dist: 'dist',
     src: 'src',
     views:{
-        ext: '.twig'
+        ext: '.twig',
+        baseDir: 'src/views'
     },
     scss:{
         files: [ 'src/scss/main.scss' ]
@@ -30,8 +31,10 @@ function Clean(){
 
 function Views(){
     return new Promise((resolve,reject) => {
-        src(`${configs.src}/views/[^_]*${configs.views.ext}`)
-        .pipe(twig())
+        src(`${configs.src}/views/**/[^_]*${configs.views.ext}`)
+        .pipe(twig({
+            base: configs.views.baseDir
+        }))
         .pipe(dest(configs.dist))
         .on('error', reject)
         .on('end', resolve)
@@ -45,7 +48,7 @@ function Sass(){
             sourceComments:false,
             outputStyle: (env == 'dev' || env == 'development') ? 'expanded' : 'compressed',
         }).on('error', sass.logError))
-        .pipe(dest(`${configs.dist}/css`))
+        .pipe(dest(`${configs.dist}/assets/css`))
         .on('error', reject)
         .on('end', resolve)
     })
@@ -58,7 +61,7 @@ function Javascripts(){
         .pipe(webpackStream({
             mode: (env == 'dev' || env == 'development') ? 'development' : 'production',
         }))
-        .pipe(dest('dist/js'))
+        .pipe(dest('dist/assets/js'))
         .on('error', reject)
         .on('end', resolve)
     })

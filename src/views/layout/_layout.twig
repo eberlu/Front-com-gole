@@ -7,30 +7,32 @@
     <title>CMS - {{ block('title') }}</title>
 
     <!-- styles -->
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="/assets/css/main.css">
     {{ block('styles') }}
 
 </head>
 <body>
-
     <!-- topbar -->
     <section class="topbar">
-        
+        <div class="container d-flex justify-content-between">
+            <a href="/">Logo</a>
+            <button type="button"><i class="fa fa-caret-down"></i></button>
+        </div>
     </section>
     
-    <section class="main-content">
-        <!-- sidebar -->
-        <nav class="sidebar">
-
+    <section class="main-block">
+        <!-- menu -->
+        <nav class="menu">
+            {{ block('menu') }}
         </nav>
         <!-- page -->
-        <main class="main-page">
+        <main class="page">
             {{ block('page') }}
         </main>
     </section>
 
     <!-- javascripts -->
-    <script src="js/layout.js"></script>
+    <script src="/assets/js/layout.js"></script>
     {{ block('javascripts') }}
 </body>
 </html>
