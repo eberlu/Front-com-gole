@@ -1,1 +1,48 @@
 @import './bootstrap/bootstrap.scss';
+@import './fontawesome/font-awesome.scss';
+@import './vars';
+@import './mixins';
+@import './components/dropdowns';
+@import './resets';
+@import '../../node_modules/swiper/swiper';
+
+html{
+    font-size: 16px;
+    font-family: 'Open Sans', 'Arial', sans-serif;
+}
+body{
+    background: $color-light-2;
+    color: $color-dark;
+    overflow-x: hidden;
+    font-family: 'Open Sans', 'Arial', sans-serif;
+}
+.main-block{
+    @media(min-width: map-get($grid-breakpoints, 'lg')){
+        .menu{
+            width: 20%;
+            height: 100%;
+            position: fixed;
+            top: 50px;
+            left: 0;
+            border: none;
+            border-right: 1px solid $color-border;
+        }
+        .page{
+            width: 80%;
+            position: relative;
+            left: 20%;
+            height: 500px;
+        }
+    }
+    @media(min-width: 1600px){
+        .menu{
+            width: 15%;
+        }
+        .page{
+            width: 85%;
+            left: 15%;
+        }
+    }
+}
+@import './bloco/topbar';
+@import './bloco/menu';

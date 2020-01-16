@@ -1,0 +1,46 @@
+.topbar{
+    background: $color-light-3;
+    height: 50px;
+    .container-fluid, .container{
+        height: 100%;
+    }
+    .logo{
+        height: 100%;
+        width: 120px;
+        @include flex(center,center);
+        color: $color-dark;
+        font-size: 90%;
+        text-transform: uppercase;
+    }
+    .topbar-avatar{
+        width: 30px;
+        height: 30px;
+        font-size: 90%;
+        @include flex(center,center);
+        background: $green;
+        border-radius: 50%;
+        margin-right: 10px;
+        color: $color-light;
+        text-align: center;
+        font-weight: bold;
+    }
+    .topbar-dropdown-open{
+        height: 100%;
+        border: 0;
+        border-left: $border-card-inverse;
+        border-right: $border-card-inverse;
+        background-color: $color-light-3;
+        color: $color-dark;
+        font-weight: 300;
+        // text-transform: uppercase;
+        &:after{
+            margin-left: 10px;
+            content: '\f078';
+            font-family: 'fontAwesome';
+            font-size: 90%;
+        }
+    }
+    .dropdown{
+        height: 100%;
+    }
+}

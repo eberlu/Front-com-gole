@@ -1,7 +1,13 @@
 {% extends "layout/_layout.twig" %}
 
 {% block menu %}
-
+    <nav class="swiper-container menu-slider">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide">1</div>
+            <div class="swiper-slide">2</div>
+            <div class="swiper-slide">3</div>
+        </div>
+    </nav>
 {% endblock %}
 
 {% block page %}
@@ -9,5 +15,4 @@
 {% endblock %}
 
 {% block javascripts %}
-<script src="js/index.js"></script>
 {% endblock %}

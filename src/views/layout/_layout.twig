@@ -13,18 +13,26 @@
 </head>
 <body>
     <!-- topbar -->
-    <section class="topbar">
-        <div class="container d-flex justify-content-between">
-            <a href="/">Logo</a>
-            <button type="button"><i class="fa fa-caret-down"></i></button>
+    <section class="topbar d-flex align-items-center justify-content-between">
+        <div class="container-fluid d-flex align-items-center justify-content-between">
+            <a href="/" class="logo">Logo</a>
+            <div class="dropdown dropdown-scale-wrap">
+                <button type="button" class="topbar-dropdown-open dropdown-open" data-toggle="dropdown" data-display="static">
+                    <div class="topbar-avatar">L</div>Luciano
+                </button>
+                <nav class="dropdown-menu dropdown-scale right bottom">
+                    <a href=""><i class="fa fa-user"></i>Editar usuário</a>
+                    <a href="">Sair</a>
+                </nav>
+            </div>
         </div>
     </section>
     
     <section class="main-block">
         <!-- menu -->
-        <nav class="menu">
+        <div class="menu container-fluid">
             {{ block('menu') }}
-        </nav>
+        </div>
         <!-- page -->
         <main class="page">
             {{ block('page') }}

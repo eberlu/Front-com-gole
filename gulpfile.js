@@ -1,4 +1,4 @@
-const env = 'prod'
+const env = 'dev'
 
 const 
 {src, dest, series,watch} = require('gulp')
@@ -22,7 +22,12 @@ const configs = {
     },
     javascripts:{
         files: ['src/js/layout.js','src/js/index.js']
+    },
+    statics: {
+        fonts: ['static/fonts/**/*'],
+        images: ['static/images/**/*'],
     }
+    
 }
 
 function Clean(){
@@ -67,11 +72,30 @@ function Javascripts(){
     })
 }
 
+function Fonts(){
+    return new Promise((resolve,reject)=>{
+        src(configs.statics.fonts)
+        .pipe(dest('dist/assets/fonts'))
+        .on('error', reject)
+        .on('end', resolve)
+    })
+}
+
+function Images(){
+    return new Promise((resolve,reject)=>{
+        src(configs.statics.images)
+        .pipe(dest('dist/assets/images'))
+        .on('error', reject)
+        .on('end', resolve)
+    })
+}
+
 exports.clean = Clean
 exports.views = Views
 exports.sass = Sass
 exports.js = Javascripts
-exports.default = series(Clean, Views, Sass, Javascripts)
+exports.default = series(Clean, Views, Sass, Javascripts, Fonts, Images)
+exports.statics = series(Fonts, Images)
 
 exports.dev = ()=>{
     browserSync.init({
@@ -85,5 +109,5 @@ exports.dev = ()=>{
     }
     watch(configs.src,{
         ignored:[]
-    }).on('change', series(Views,Sass, Javascripts, reload))
+    }).on('change', series(Views, Sass, Javascripts, reload))
 }
