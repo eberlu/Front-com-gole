@@ -5,29 +5,35 @@ const
 ,clean = require('gulp-clean')
 ,twig = require('gulp-twig')
 ,named = require('vinyl-named')
-,sass = require('gulp-sass')
-,uglify = require('gulp-uglify-es').default
+,sass = require('gulp-dart-sass')
 ,webpackStream = require('webpack-stream')
 ,browserSync = require('browser-sync').create()
+,pages = require('./pages.config')
+,scssPages = []
+,jsPages = []
+
+function pushPagesConfig() {
+    pages.filenames.forEach(filename => {
+        scssPages.push(`src/${filename}.scss`)
+        jsPages.push(`src/${filename}.js`)
+    })
+}
+
+pushPagesConfig()
 
 const configs = {
     dist: 'dist',
     src: 'src',
     views:{
         ext: '.twig',
-        baseDir: 'src/views'
+        baseDir: 'src/'
     },
     scss:{
-        files: [ 'src/scss/main.scss' ]
+        files: scssPages
     },
     javascripts:{
-        files: ['src/js/layout.js','src/js/index.js']
-    },
-    statics: {
-        fonts: ['static/fonts/**/*'],
-        images: ['static/images/**/*'],
+        files: jsPages
     }
-    
 }
 
 function Clean(){
@@ -36,7 +42,7 @@ function Clean(){
 
 function Views(){
     return new Promise((resolve,reject) => {
-        src(`${configs.src}/views/**/[^_]*${configs.views.ext}`)
+        src(`${configs.src}/**/[^_]*${configs.views.ext}`)
         .pipe(twig({
             base: configs.views.baseDir
         }))
@@ -53,7 +59,7 @@ function Sass(){
             sourceComments:false,
             outputStyle: (env == 'dev' || env == 'development') ? 'expanded' : 'compressed',
         }).on('error', sass.logError))
-        .pipe(dest(`${configs.dist}/assets/css`))
+        .pipe(dest(`${configs.dist}/`))
         .on('error', reject)
         .on('end', resolve)
     })
@@ -66,36 +72,16 @@ function Javascripts(){
         .pipe(webpackStream({
             mode: (env == 'dev' || env == 'development') ? 'development' : 'production',
         }))
-        .pipe(dest('dist/assets/js'))
+        .pipe(dest('dist/'))
         .on('error', reject)
         .on('end', resolve)
     })
 }
-
-function Fonts(){
-    return new Promise((resolve,reject)=>{
-        src(configs.statics.fonts)
-        .pipe(dest('dist/assets/fonts'))
-        .on('error', reject)
-        .on('end', resolve)
-    })
-}
-
-function Images(){
-    return new Promise((resolve,reject)=>{
-        src(configs.statics.images)
-        .pipe(dest('dist/assets/images'))
-        .on('error', reject)
-        .on('end', resolve)
-    })
-}
-
 exports.clean = Clean
 exports.views = Views
 exports.sass = Sass
 exports.js = Javascripts
-exports.default = series(Clean, Views, Sass, Javascripts, Fonts, Images)
-exports.statics = series(Fonts, Images)
+exports.default = series(Clean, Views, Sass, Javascripts)
 
 exports.dev = ()=>{
     browserSync.init({

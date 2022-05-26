@@ -1,6 +1,0 @@
-@mixin flex($alignItems: false, $justifyContent: false, $flexFlow: false){
-    display: flex;
-    @if $alignItems{ align-items: $alignItems };
-    @if $justifyContent{ justify-content: $justifyContent };
-    @if $flexFlow{ flex-flow: $flexFlow };
-}
