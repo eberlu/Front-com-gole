@@ -12,7 +12,7 @@ Dev server: ```yarn dev```
 
 ### Views
 
-O template engine escolhido foi o [Twig](https://twig.symfony.com/), o arquivo ```src/_layout.twig``` contem alguns snippets úteis para montar o "sanduíche" de seu html.
+O template engine escolhido foi o [Twig](https://twig.symfony.com/), o arquivo ```src/_layout.twig``` contém alguns snippets úteis para montar o "sanduíche" de seu html.
 
 ### Styles
 
