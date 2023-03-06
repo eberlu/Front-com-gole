@@ -1,5 +1,5 @@
 # Front-com-gole
-Layout e estrutura front-end para gerar templates web (HTML/CSS/JS).
+Boilerplate para web templates com gulp
 
 ## Comandos
 
