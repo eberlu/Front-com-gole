@@ -1,0 +1,23 @@
+{% extends "_layout.twig" %}
+
+{% block head %}
+
+    <title>{{ appName }}</title>
+
+{% endblock %}
+
+{% block content %}
+
+    <h1>Olá, sou uma homepage :)</h1>
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+
+        alert('alerta vindo de um script que pertence apenas a homepage')
+
+    </script>
+
+{% endblock %}

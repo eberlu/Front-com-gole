@@ -1,99 +1,98 @@
-const env = 'dev'
-
-const 
-{src, dest, series,watch} = require('gulp')
+const { series, src, dest, watch } = require('gulp')
+,browserSync = require('browser-sync')
 ,clean = require('gulp-clean')
-,twig = require('gulp-twig')
-,named = require('vinyl-named')
+,configs = require('./config.js')
+,copy = require('gulp-copy')
 ,sass = require('gulp-dart-sass')
-,webpackStream = require('webpack-stream')
-,browserSync = require('browser-sync').create()
-,pages = require('./pages.config')
-,scssPages = []
-,jsPages = []
+,twig = require('gulp-twig')
+,webpack = require('webpack-stream')
 
-function pushPagesConfig() {
-    pages.filenames.forEach(filename => {
-        scssPages.push(`src/${filename}.scss`)
-        jsPages.push(`src/${filename}.js`)
-    })
-}
-
-pushPagesConfig()
-
-const configs = {
-    dist: 'dist',
-    src: 'src',
-    views:{
-        ext: '.twig',
-        baseDir: 'src/'
-    },
-    scss:{
-        files: scssPages
-    },
-    javascripts:{
-        files: jsPages
-    }
-}
+// deleta todos arquivos da dist
 
 function Clean(){
-    return src(configs.dist).pipe(clean({read:false, allowEmpty: false}));
+    return src([`${configs.dist}/**/*`])    
+    .pipe(clean({
+        allowEmpty: true,
+        force: true
+    }))
 }
 
-function Views(){
-    return new Promise((resolve,reject) => {
-        src(`${configs.src}/**/[^_]*${configs.views.ext}`)
-        .pipe(twig({
-            base: configs.views.baseDir
-        }))
-        .pipe(dest(configs.dist))
-        .on('error', reject)
-        .on('end', resolve)
-    })
+// copia todos arquivos da pasta static para dist
+
+function Statics() {
+    return src(`${configs.static}/**`)
+    .pipe(copy(configs.dist, { prefix: 1 }))
 }
 
-function Sass(){
-    return new Promise((resolve,reject)=>{
-        src(configs.scss.files)
-        .pipe(sass({
-            sourceComments:false,
-            outputStyle: (env == 'dev' || env == 'development') ? 'expanded' : 'compressed',
-        }).on('error', sass.logError))
-        .pipe(dest(`${configs.dist}/`))
-        .on('error', reject)
-        .on('end', resolve)
-    })
+// compila os templates twigs exceto os arquivos que iniciarem com underline.
+
+function Views() {
+    return src(`${configs.src}/**/[^_]*.twig`)
+    .pipe(twig({
+        base: configs.src,
+        data: { ...configs }
+    }))
+    .pipe(dest(configs.dist))
 }
 
-function Javascripts(){
-    return new Promise((resolve,reject)=>{
-        src(configs.javascripts.files)
-        .pipe(named())
-        .pipe(webpackStream({
-            mode: (env == 'dev' || env == 'development') ? 'development' : 'production',
-        }))
-        .pipe(dest('dist/'))
-        .on('error', reject)
-        .on('end', resolve)
-    })
-}
-exports.clean = Clean
-exports.views = Views
-exports.sass = Sass
-exports.js = Javascripts
-exports.default = series(Clean, Views, Sass, Javascripts)
+// compila os estilos SCSS minificados
 
-exports.dev = ()=>{
+function Styles() {
+    return src(`${configs.src}/**/[^_]*.scss`)
+    .pipe(sass({outputStyle: 'compressed'})
+    .on('error', sass.logError))
+    .pipe(dest(`${configs.dist}`))
+}
+
+// gera o bundle dos javascripts através do webpack
+
+function Scripts() {
+    return src(configs.jsFiles.main)
+    .pipe(webpack({
+        entry: configs.jsFiles,
+        output: {
+            filename: 'js/[name].js',
+        },
+    }))
+    .pipe(dest(configs.dist))
+}
+
+// Atualiza a janela do navegador
+
+function reload() {
+    browserSync.reload()
+}
+
+// tarefas
+
+exports.default = series(
+    Clean,
+    Statics,
+    Views,
+    Styles,
+    Scripts,
+)
+
+exports.dev = () => {
+
+    // Sobe o dev-serv
     browserSync.init({
-        server:{
-            baseDir: configs.dist
+        open: false,
+        server: {
+            baseDir: configs.dist,
         }
-    });
+    })
 
-    function reload(){
-        browserSync.reload();
-    }
-    watch(configs.src,{
-        ignored:[]
-    }).on('change', series(Views, Sass, Javascripts, reload))
+    // monitora mudanças nas views
+    watch(`${configs.src}/*.twig`)
+    .on('change', series(Views, reload))
+
+    // monitora mudanças nos estilos
+    watch(`${configs.src}/scss/*.scss`)
+    .on('change', series(Styles, reload))
+
+    // monitora mudanças nos scripts
+    watch(`${configs.src}/js/*.js`)
+    .on('change', series(Scripts, reload))
+    
 }
