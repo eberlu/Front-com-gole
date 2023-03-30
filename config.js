@@ -1,4 +1,5 @@
 module.exports = {
+    mode: 'development',
     appName: 'Gulp Base',
     appLocale: 'pt-br',
     dist: 'dist',

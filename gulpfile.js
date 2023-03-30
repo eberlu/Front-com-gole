@@ -49,6 +49,7 @@ function Styles() {
 function Scripts() {
     return src(configs.jsFiles.main)
     .pipe(webpack({
+        mode: configs.mode,
         entry: configs.jsFiles,
         output: {
             filename: 'js/[name].js',
